@@ -32,36 +32,33 @@ import {
   Navigation,
 } from "lucide-react"
 
-// ✅ Corrected getLocationData function
+// This would typically come from your API/database
 async function getLocationData(slug: string) {
-  try {
-    const response = await fetch(
-      `https://nashiksq.wtdemo.in/api/location-details/${slug}`,
-      { cache: "no-store" } // Next.js caching avoid karne ke liye
-    );
-
-    if (!response.ok) {
-      throw new Error("Failed to fetch location data");
-    }
-
-    const json = await response.json();
-    return json.data; // 👈 yaha se actual location object milega
-  } catch (error) {
-    console.error("Error fetching location data:", error);
-    return null;
+  // Mock data - replace with actual API call
+  return {
+    name: "Nashik Road",
+    slug: "nashik-road",
+    description:
+      "Nashik Road is one of the most sought-after residential areas in Nashik, known for its excellent connectivity, modern infrastructure, and peaceful environment.",
+    heroImage: "/placeholder.svg?height=400&width=800",
+    stats: {
+      avgPrice: "₹4,500",
+      priceGrowth: 12.5,
+      totalProperties: 450,
+      totalProjects: 25,
+      population: "2.5 Lakh",
+      pincode: "422101",
+    },
+    marketTrends: {
+      residential: { current: 4500, growth: 12.5 },
+      commercial: { current: 8500, growth: 8.2 },
+      rental: { current: 15000, growth: 15.3 },
+    },
   }
 }
 
-// ✅ generateMetadata uses corrected getLocationData
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
-  const location = await getLocationData(params.slug);
-
-  if (!location) {
-    return {
-      title: "Location Not Found | NasikSquare.com",
-      description: "The location you are looking for does not exist."
-    };
-  }
+  const location = await getLocationData(params.slug)
 
   return {
     title: `${location.name} Properties for Sale & Rent | NasikSquare.com`,
@@ -72,126 +69,12 @@ export async function generateMetadata({ params }: { params: { slug: string } })
       description: location.description,
       images: [location.heroImage],
     },
-  };
-}
-
-// ✅ LocationDetailPage also uses corrected getLocationData
-export default async function LocationDetailPage({ params }: { params: { slug: string } }) {
-  const location = await getLocationData(params.slug);
-
-  if (!location) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <h1 className="text-2xl font-bold text-red-500">Location Not Found</h1>
-      </div>
-    );
   }
-  // Your full UI rendering logic goes here, using the 'location' data
-  // (the rest of your original code that renders the page content)
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-brand-cream/20 to-white">
-      {/* Hero Section */}
-      <section className="relative bg-gradient-to-r from-brand-dark-green to-brand-green text-white py-20">
-        <div className="absolute inset-0 bg-black/20"></div>
-        <div className="container mx-auto px-4 relative z-10">
-          <div className="max-w-4xl">
-            <div className="flex items-center gap-2 mb-4">
-              <MapPin className="h-5 w-5" />
-              <span className="text-brand-cream">Nashik, Maharashtra</span>
-            </div>
-            <h1 className="text-5xl font-bold mb-6">{location.name}</h1>
-            <p className="text-xl mb-8 text-brand-cream/90 leading-relaxed">{location.description}</p>
-            {/* Quick Stats */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-              <div className="text-center">
-                <div className="text-3xl font-bold text-brand-cream">{location.stats.avgPrice}</div>
-                <div className="text-sm opacity-90">Avg Price/sq ft</div>
-              </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold text-brand-cream flex items-center justify-center gap-1">
-                  <TrendingUp className="h-6 w-6" />
-                  {location.stats.priceGrowth}%
-                </div>
-                <div className="text-sm opacity-90">Price Growth</div>
-              </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold text-brand-cream">{location.stats.totalProperties}</div>
-                <div className="text-sm opacity-90">Properties</div>
-              </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold text-brand-cream">{location.stats.totalProjects}</div>
-                <div className="text-sm opacity-90">Projects</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <div className="container mx-auto px-4 py-12">
-        {/* Market Trends */}
-        <section className="mb-16">
-          <h2 className="text-3xl font-bold text-brand-dark-green mb-8">Market Trends & Analysis</h2>
-          <div className="grid md:grid-cols-3 gap-6">
-            <Card className="border-brand-green/20 hover:shadow-lg transition-shadow">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-brand-dark-green flex items-center gap-2">
-                  <Home className="h-5 w-5" />
-                  Residential
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold text-brand-green mb-2">
-                  ₹{location.marketTrends.residential.current}/sq ft
-                </div>
-                <div className="flex items-center gap-2 text-green-600">
-                  <TrendingUp className="h-4 w-4" />
-                  <span className="font-semibold">+{location.marketTrends.residential.growth}%</span>
-                  <span className="text-gray-600">YoY Growth</span>
-                </div>
-              </CardContent>
-            </Card>
-            <Card className="border-brand-green/20 hover:shadow-lg transition-shadow">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-brand-dark-green flex items-center gap-2">
-                  <Building2 className="h-5 w-5" />
-                  Commercial
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold text-brand-green mb-2">
-                  ₹{location.marketTrends.commercial.current}/sq ft
-                </div>
-                <div className="flex items-center gap-2 text-green-600">
-                  <TrendingUp className="h-4 w-4" />
-                  <span className="font-semibold">+{location.marketTrends.commercial.growth}%</span>
-                  <span className="text-gray-600">YoY Growth</span>
-                </div>
-              </CardContent>
-            </Card>
-            <Card className="border-brand-green/20 hover:shadow-lg transition-shadow">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-brand-dark-green flex items-center gap-2">
-                  <IndianRupee className="h-5 w-5" />
-                  Rental
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold text-brand-green mb-2">
-                  ₹{location.marketTrends.rental.current}/month
-                </div>
-                <div className="flex items-center gap-2 text-green-600">
-                  <TrendingUp className="h-4 w-4" />
-                  <span className="font-semibold">+{location.marketTrends.rental.growth}%</span>
-                  <span className="text-gray-600">YoY Growth</span>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </section>
-      </div>
-    </div>
-  );
 }
+
+export default async function LocationDetailPage({ params }: { params: { slug: string } }) {
+  const location = await getLocationData(params.slug)
+
   const featuredProperties = [
     {
       id: 1,
